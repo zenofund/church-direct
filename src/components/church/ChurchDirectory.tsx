@@ -2,22 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { ImageUpload } from '../ImageUpload'
-import { 
-  Search, 
-  MapPin, 
-  Phone, 
-  User, 
-  Church as ChurchIcon, 
-  Edit, 
-  X,
-  Calendar,
-  Clock,
-  Mail,
-  ExternalLink,
-  ChevronLeft,
-  ChevronRight,
-  MoreHorizontal
-} from 'lucide-react'
+import { Search, MapPin, Phone, User, Church as ChurchIcon, CreditCard as Edit, X, Calendar, Clock, Mail, ExternalLink, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 
 interface Church {
   id: string
