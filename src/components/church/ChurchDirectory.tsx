@@ -481,35 +481,12 @@ function ChurchCard({ church, onEdit, onClick, isMobile = false }: ChurchCardPro
               <p className="text-xs text-gray-500 mt-1 line-clamp-2">{church.address}</p>
             </div>
           </div>
-
-          <div className="flex items-center space-x-3">
-            <User className="h-4 w-4 text-green-500 flex-shrink-0" />
-            <div className="text-sm min-w-0">
-              <p className="font-medium text-gray-900 line-clamp-1">{church.minister_name}</p>
-              <p className="text-xs text-gray-500">Minister</p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <Phone className="h-4 w-4 text-purple-500 flex-shrink-0" />
-            <p className="text-sm font-medium text-gray-900 line-clamp-1">{church.contact_phone}</p>
-          </div>
-
-          {church.sunday_service_time && (
-            <div className="flex items-center space-x-3">
-              <Clock className="h-4 w-4 text-orange-500 flex-shrink-0" />
-              <div className="text-sm min-w-0">
-                <p className="font-medium text-gray-900">{church.sunday_service_time}</p>
-                <p className="text-xs text-gray-500">Sunday Service</p>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* View Details Button */}
         <div className="mt-4 pt-4 border-t border-gray-100">
           <div className="flex items-center justify-center text-blue-600 text-sm font-medium group-hover:text-blue-700 transition-colors">
-            <span>View Details</span>
+            <span>View Full Details</span>
             <ExternalLink className="h-4 w-4 ml-2" />
           </div>
         </div>
