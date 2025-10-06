@@ -26,9 +26,10 @@ export function Layout({ children }: LayoutProps) {
     navigate('/directory')
   }
 
-  // Navigation items for authenticated users only
+  // Navigation items
   const navItems = [
-    { icon: Home, label: 'Directory', path: '/directory' },
+    { icon: Home, label: 'Home', path: '/' },
+    { icon: Church, label: 'Directory', path: '/directory' },
     ...(user ? [{ icon: Plus, label: 'Add Church', path: '/add-church' }] : []),
     ...(isAdmin ? [{ icon: Settings, label: 'Admin', path: '/admin' }] : []),
   ]

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { ImageUpload } from '../ImageUpload'
+import { formatPhoneInput, formatNigerianPhone } from '../../lib/phoneUtils'
 import { Search, MapPin, Phone, User, Church as ChurchIcon, CreditCard as Edit, X, Calendar, Clock, Mail, ExternalLink, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 
 interface Church {
@@ -181,6 +182,10 @@ export function ChurchDirectory() {
       // Upload image if it's a blob URL
       const finalPhotoUrl = await uploadImageToSupabase(updatedChurch.photo_url || '')
 
+      // Format phone numbers before updating
+      const formattedMinisterPhone = updatedChurch.minister_phone ? formatNigerianPhone(updatedChurch.minister_phone) : undefined
+      const formattedContactPhone = formatNigerianPhone(updatedChurch.contact_phone)
+
       const { error } = await supabase
         .from('churches')
         .update({
@@ -189,15 +194,15 @@ export function ChurchDirectory() {
           city: updatedChurch.city,
           state: updatedChurch.state,
           minister_name: updatedChurch.minister_name,
-          minister_phone: updatedChurch.minister_phone,
-          contact_phone: updatedChurch.contact_phone,
+          minister_phone: formattedMinisterPhone,
+          contact_phone: formattedContactPhone,
           sunday_service_time: updatedChurch.sunday_service_time,
           photo_url: finalPhotoUrl,
         })
         .eq('id', updatedChurch.id)
 
       if (error) throw error
-      
+
       setEditingChurch(null)
       fetchChurches()
     } catch (error: any) {
@@ -829,22 +834,38 @@ function EditChurchModal({ church, onSave, onCancel }: EditChurchModalProps) {
               <input
                 type="tel"
                 value={formData.minister_phone || ''}
-                onChange={(e) => handleChange('minister_phone', e.target.value)}
+                onChange={(e) => {
+                  const formatted = formatPhoneInput(e.target.value)
+                  handleChange('minister_phone', formatted)
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="+234 XXX XXX XXXX"
+                maxLength={18}
               />
+              <p className="mt-1 text-xs text-gray-500">
+                11-digit Nigerian number
+              </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Contact Phone
+                Contact Phone *
               </label>
               <input
                 type="tel"
                 value={formData.contact_phone}
-                onChange={(e) => handleChange('contact_phone', e.target.value)}
+                onChange={(e) => {
+                  const formatted = formatPhoneInput(e.target.value)
+                  handleChange('contact_phone', formatted)
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="+234 XXX XXX XXXX"
+                maxLength={18}
                 required
               />
+              <p className="mt-1 text-xs text-gray-500">
+                11-digit Nigerian number (e.g., 08012345678)
+              </p>
             </div>
 
             <div>

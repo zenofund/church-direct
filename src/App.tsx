@@ -6,6 +6,7 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 import { LoginForm } from './components/auth/LoginForm'
 import { RegisterForm } from './components/auth/RegisterForm'
 import { ResetPasswordForm } from './components/auth/ResetPasswordForm'
+import { HomePage } from './components/home/HomePage'
 import { ChurchDirectory } from './components/church/ChurchDirectory'
 import { AddChurchWizard } from './components/church/AddChurchWizard'
 import { AdminDashboard } from './components/admin/AdminDashboard'
@@ -19,6 +20,13 @@ function App() {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/reset-password" element={<ResetPasswordForm />} />
+
+          {/* Home Page */}
+          <Route path="/" element={
+            <Layout>
+              <HomePage />
+            </Layout>
+          } />
 
           {/* Public Directory - No authentication required */}
           <Route path="/directory" element={
@@ -43,9 +51,6 @@ function App() {
               </Layout>
             </ProtectedRoute>
           } />
-
-          {/* Default redirect */}
-          <Route path="/" element={<Navigate to="/directory" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

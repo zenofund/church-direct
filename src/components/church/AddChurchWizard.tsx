@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 import { ImageUpload } from '../ImageUpload'
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Church, 
-  MapPin, 
-  User, 
-  Phone, 
+import { formatPhoneInput, formatNigerianPhone, isValidNigerianPhoneLength } from '../../lib/phoneUtils'
+import {
+  ChevronLeft,
+  ChevronRight,
+  Church,
+  MapPin,
+  User,
+  Phone,
   Camera,
   Check,
   Clock,
@@ -145,8 +146,8 @@ export function AddChurchWizard() {
       case 4:
         if (!formData.contactPhone.trim()) {
           newErrors.contactPhone = 'Contact phone is required'
-        } else if (!/^\+?([0-9]{10,15})$/.test(formData.contactPhone.replace(/[\s\-\(\)]/g, ''))) {
-          newErrors.contactPhone = 'Please enter a valid phone number'
+        } else if (!isValidNigerianPhoneLength(formData.contactPhone)) {
+          newErrors.contactPhone = 'Please enter a valid 11-digit Nigerian phone number'
         }
         break
       case 5:
@@ -224,6 +225,10 @@ export function AddChurchWizard() {
       // Upload image if it's a blob URL
       const finalPhotoUrl = await uploadImageToSupabase(formData.photoUrl)
 
+      // Format phone numbers before submission
+      const formattedMinisterPhone = formData.ministerPhone ? formatNigerianPhone(formData.ministerPhone) : undefined
+      const formattedContactPhone = formatNigerianPhone(formData.contactPhone)
+
       const { error } = await supabase
         .from('churches')
         .insert({
@@ -232,8 +237,8 @@ export function AddChurchWizard() {
           city: formData.city,
           state: formData.state,
           minister_name: formData.ministerName,
-          minister_phone: formData.ministerPhone || undefined,
-          contact_phone: formData.contactPhone,
+          minister_phone: formattedMinisterPhone,
+          contact_phone: formattedContactPhone,
           sunday_service_time: formData.sundayServiceTime,
           photo_url: finalPhotoUrl,
           submitted_by: user!.id,
@@ -461,10 +466,17 @@ export function AddChurchWizard() {
                 <input
                   type="tel"
                   value={formData.ministerPhone}
-                  onChange={(e) => handleInputChange('ministerPhone', e.target.value)}
-                  placeholder="+234 xxx xxx xxxx"
+                  onChange={(e) => {
+                    const formatted = formatPhoneInput(e.target.value)
+                    handleInputChange('ministerPhone', formatted)
+                  }}
+                  placeholder="+234 XXX XXX XXXX"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  maxLength={18}
                 />
+                <p className="mt-1 text-xs text-gray-500">
+                  Enter 11-digit number (e.g., 08012345678)
+                </p>
               </div>
             </div>
           </div>
@@ -487,15 +499,22 @@ export function AddChurchWizard() {
               <input
                 type="tel"
                 value={formData.contactPhone}
-                onChange={(e) => handleInputChange('contactPhone', e.target.value)}
-                placeholder="+234 xxx xxx xxxx"
+                onChange={(e) => {
+                  const formatted = formatPhoneInput(e.target.value)
+                  handleInputChange('contactPhone', formatted)
+                }}
+                placeholder="+234 XXX XXX XXXX"
                 className={`w-full px-4 py-4 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.contactPhone ? 'border-red-300' : 'border-gray-300'
                 }`}
+                maxLength={18}
               />
               {errors.contactPhone && (
                 <p className="mt-2 text-sm text-red-600">{errors.contactPhone}</p>
               )}
+              <p className="mt-2 text-xs text-gray-500">
+                Enter 11-digit Nigerian phone number (e.g., 08012345678)
+              </p>
             </div>
           </div>
         )
