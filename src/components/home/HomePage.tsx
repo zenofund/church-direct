@@ -108,7 +108,7 @@ export function HomePage() {
 
   return (
     <div className="space-y-12 sm:space-y-16 lg:space-y-20">
-      <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 text-white rounded-2xl overflow-hidden shadow-2xl">
+      <section className="relative -mx-4 sm:-mx-6 lg:-mx-8 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 text-white overflow-hidden shadow-2xl">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnptLTEyIDEyYzMuMzE0IDAgNiAyLjY4NiA2IDZzLTIuNjg2IDYtNiA2LTYtMi42ODYtNi02IDIuNjg2LTYgNi02eiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuMDUiLz48L2c+PC9zdmc+')] opacity-20"></div>
 
         <div className="relative px-6 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">

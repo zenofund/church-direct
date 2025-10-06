@@ -176,21 +176,22 @@ export function AddChurchWizard() {
   }
 
   const uploadImageToSupabase = async (imageUrl: string): Promise<string> => {
-    if (!imageUrl || imageUrl.startsWith('http') || imageUrl.startsWith('/')) {
-      return imageUrl // Return existing URL or default
+    if (!imageUrl || imageUrl === '/default.png' || imageUrl.startsWith('http')) {
+      return imageUrl
+    }
+
+    if (!imageUrl.startsWith('blob:')) {
+      return imageUrl
     }
 
     try {
-      // Convert blob URL to actual blob
       const response = await fetch(imageUrl)
       const blob = await response.blob()
-      
-      // Generate unique filename
+
       const fileExt = 'jpg'
       const fileName = `church-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
       const filePath = `churches/${fileName}`
 
-      // Upload to Supabase Storage
       const { data, error } = await supabase.storage
         .from('church-images')
         .upload(filePath, blob, {
@@ -203,7 +204,6 @@ export function AddChurchWizard() {
         throw error
       }
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('church-images')
         .getPublicUrl(filePath)
@@ -211,7 +211,6 @@ export function AddChurchWizard() {
       return publicUrl
     } catch (error) {
       console.error('Error uploading image:', error)
-      // Return default image if upload fails
       return '/default.png'
     }
   }
@@ -467,12 +466,11 @@ export function AddChurchWizard() {
                   type="tel"
                   value={formData.ministerPhone}
                   onChange={(e) => {
-                    const formatted = formatPhoneInput(e.target.value)
-                    handleInputChange('ministerPhone', formatted)
+                    handleInputChange('ministerPhone', e.target.value)
                   }}
-                  placeholder="+234 XXX XXX XXXX"
+                  placeholder="08012345678"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  maxLength={18}
+                  maxLength={11}
                 />
                 <p className="mt-1 text-xs text-gray-500">
                   Enter 11-digit number (e.g., 08012345678)
@@ -500,14 +498,13 @@ export function AddChurchWizard() {
                 type="tel"
                 value={formData.contactPhone}
                 onChange={(e) => {
-                  const formatted = formatPhoneInput(e.target.value)
-                  handleInputChange('contactPhone', formatted)
+                  handleInputChange('contactPhone', e.target.value)
                 }}
-                placeholder="+234 XXX XXX XXXX"
+                placeholder="08012345678"
                 className={`w-full px-4 py-4 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.contactPhone ? 'border-red-300' : 'border-gray-300'
                 }`}
-                maxLength={18}
+                maxLength={11}
               />
               {errors.contactPhone && (
                 <p className="mt-2 text-sm text-red-600">{errors.contactPhone}</p>
@@ -655,14 +652,14 @@ export function AddChurchWizard() {
                   {formData.ministerName}
                   {formData.ministerPhone && (
                     <span className="text-sm text-gray-500 ml-2">
-                      ({formData.ministerPhone})
+                      ({formatNigerianPhone(formData.ministerPhone)})
                     </span>
                   )}
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Contact Phone</h3>
-                <p className="text-gray-600">{formData.contactPhone}</p>
+                <p className="text-gray-600">{formatNigerianPhone(formData.contactPhone)}</p>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Sunday Service</h3>

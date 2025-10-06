@@ -10,6 +10,7 @@ interface ImageUploadProps {
 export function ImageUpload({ currentImageUrl, onImageChange, className = '' }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [croppedBlob, setCroppedBlob] = useState<Blob | null>(null)
   const [showCropper, setShowCropper] = useState(false)
   const [originalImage, setOriginalImage] = useState<HTMLImageElement | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -89,6 +90,7 @@ export function ImageUpload({ currentImageUrl, onImageChange, className = '' }: 
       if (blob) {
         const croppedUrl = URL.createObjectURL(blob)
         setPreviewUrl(croppedUrl)
+        setCroppedBlob(blob)
         setShowCropper(false)
         onImageChange(croppedUrl)
       }
@@ -98,6 +100,7 @@ export function ImageUpload({ currentImageUrl, onImageChange, className = '' }: 
   const handleRemoveImage = useCallback(() => {
     setPreviewUrl(null)
     setOriginalImage(null)
+    setCroppedBlob(null)
     onImageChange('/default.png')
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
