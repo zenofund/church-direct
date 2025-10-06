@@ -31,7 +31,8 @@ interface Church {
   sunday_service_time?: string
   photo_url?: string
   created_at: string
-  created_by: string
+  submitted_by: string
+  is_approved: boolean
 }
 
 const NIGERIAN_STATES = [
@@ -96,7 +97,7 @@ export function ChurchDirectory() {
       const { data, error } = await supabase
         .from('churches')
         .select('*')
-        .eq('status', 'approved')
+        .eq('is_approved', true)
         .order('name')
 
       if (error) throw error
@@ -146,7 +147,7 @@ export function ChurchDirectory() {
 
   // Check if user can edit a church (owner or admin)
   const canEditChurch = (church: Church) => {
-    return user?.id === church.created_by || isAdmin
+    return user?.id === church.submitted_by || isAdmin
   }
 
   const uploadImageToSupabase = async (imageUrl: string): Promise<string> => {

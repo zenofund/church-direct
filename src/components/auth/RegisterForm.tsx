@@ -8,8 +8,7 @@ export function RegisterForm() {
     email: '',
     password: '',
     confirmPassword: '',
-    fullName: '',
-    accessCode: ''
+    fullName: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -37,9 +36,9 @@ export function RegisterForm() {
     }
 
     try {
-      await signUp(formData.email, formData.password, formData.fullName, formData.accessCode)
+      await signUp(formData.email, formData.password, formData.fullName)
       setSuccess(true)
-      setTimeout(() => navigate('/login'), 2000)
+      setTimeout(() => navigate('/directory'), 2000)
     } catch (error: any) {
       setError(error.message || 'An error occurred during registration')
     } finally {
@@ -80,7 +79,7 @@ export function RegisterForm() {
               Join Church Directory
             </h2>
             <p className="text-gray-400">
-              Create your account to access the directory
+              Create a free account to contribute to the directory
             </p>
           </div>
 
@@ -121,22 +120,6 @@ export function RegisterForm() {
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                   placeholder="Enter your email"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="accessCode" className="block text-sm font-medium text-gray-300 mb-2">
-                  Congregational Access Code
-                </label>
-                <input
-                  id="accessCode"
-                  name="accessCode"
-                  type="text"
-                  required
-                  value={formData.accessCode}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                  placeholder="Enter access code: COC-2024"
                 />
               </div>
 

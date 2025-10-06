@@ -19,16 +19,15 @@ function App() {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/reset-password" element={<ResetPasswordForm />} />
-          
-          {/* Protected Routes */}
+
+          {/* Public Directory - No authentication required */}
           <Route path="/directory" element={
-            <ProtectedRoute>
-              <Layout>
-                <ChurchDirectory />
-              </Layout>
-            </ProtectedRoute>
+            <Layout>
+              <ChurchDirectory />
+            </Layout>
           } />
-          
+
+          {/* Protected Routes - Authentication required */}
           <Route path="/add-church" element={
             <ProtectedRoute>
               <Layout>
@@ -36,7 +35,7 @@ function App() {
               </Layout>
             </ProtectedRoute>
           } />
-          
+
           <Route path="/admin" element={
             <ProtectedRoute adminOnly>
               <Layout>
@@ -44,7 +43,7 @@ function App() {
               </Layout>
             </ProtectedRoute>
           } />
-          
+
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/directory" replace />} />
         </Routes>

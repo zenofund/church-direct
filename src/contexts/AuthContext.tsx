@@ -7,7 +7,7 @@ interface AuthContextType {
   userProfile: any | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<any>
-  signUp: (email: string, password: string, fullName: string, accessCode: string) => Promise<any>
+  signUp: (email: string, password: string, fullName: string) => Promise<any>
   signOut: () => Promise<void>
   isAdmin: boolean
 }
@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const CONGREGATIONAL_ACCESS_CODE = 'COC-2024'
+  // Access code removed - registration is now open to public
 
   useEffect(() => {
     // Get initial session
@@ -140,11 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signUp = async (email: string, password: string, fullName: string, accessCode: string) => {
-    if (accessCode !== CONGREGATIONAL_ACCESS_CODE) {
-      throw new Error('Invalid congregational access code')
-    }
-
+  const signUp = async (email: string, password: string, fullName: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,

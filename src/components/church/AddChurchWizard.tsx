@@ -79,7 +79,7 @@ export function AddChurchWizard() {
       const { data, error } = await supabase
         .from('churches')
         .select('id')
-        .eq('created_by', user.id)
+        .eq('submitted_by', user.id)
 
       if (error) throw error
 
@@ -236,8 +236,8 @@ export function AddChurchWizard() {
           contact_phone: formData.contactPhone,
           sunday_service_time: formData.sundayServiceTime,
           photo_url: finalPhotoUrl,
-          created_by: user!.id,
-          status: 'approved' // Auto-approve for now
+          submitted_by: user!.id,
+          is_approved: true
         })
 
       if (error) throw error

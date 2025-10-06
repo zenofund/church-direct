@@ -20,9 +20,9 @@ interface Church {
   state: string
   minister_name: string
   contact_phone: string
-  status: 'pending' | 'approved' | 'rejected'
+  is_approved: boolean
   created_at: string
-  created_by: string
+  submitted_by: string
   user_profiles?: {
     full_name: string
     email: string
@@ -34,7 +34,7 @@ interface UserProfile {
   email: string
   full_name: string
   role: 'member' | 'admin'
-  status: 'pending' | 'approved' | 'rejected'
+  is_approved: boolean
   created_at: string
 }
 
@@ -130,11 +130,11 @@ export function AdminDashboard() {
     }, 500)
   }
 
-  const updateChurchStatus = async (churchId: string, status: 'approved' | 'rejected') => {
+  const updateChurchStatus = async (churchId: string, approved: boolean) => {
     try {
       const { error } = await supabase
         .from('churches')
-        .update({ status })
+        .update({ is_approved: approved })
         .eq('id', churchId)
 
       if (error) throw error
@@ -160,11 +160,11 @@ export function AdminDashboard() {
     }
   }
 
-  const updateUserStatus = async (userId: string, status: 'approved' | 'rejected') => {
+  const updateUserStatus = async (userId: string, approved: boolean) => {
     try {
       const { error } = await supabase
         .from('user_profiles')
-        .update({ status })
+        .update({ is_approved: approved })
         .eq('id', userId)
 
       if (error) throw error
@@ -222,8 +222,8 @@ export function AdminDashboard() {
     )
   }
 
-  const pendingChurches = churches.filter(c => c.status === 'pending').length
-  const pendingUsers = users.filter(u => u.status === 'pending').length
+  const pendingChurches = churches.filter(c => !c.is_approved).length
+  const pendingUsers = users.filter(u => !u.is_approved).length
   const hasMoreChurches = displayedChurches.length < churches.length
   const hasMoreUsers = displayedUsers.length < users.length
 
@@ -335,16 +335,12 @@ export function AdminDashboard() {
                       <div className="flex items-start space-x-3 mb-2">
                         <h3 className="font-semibold text-gray-900 flex-1">{church.name}</h3>
                         <span className={`px-2 py-1 text-xs font-medium rounded-full flex items-center space-x-1 ${
-                          church.status === 'approved'
+                          church.is_approved
                             ? 'bg-green-100 text-green-800'
-                            : church.status === 'rejected'
-                            ? 'bg-red-100 text-red-800'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}>
-                          {church.status === 'approved' && <CheckCircle className="h-3 w-3" />}
-                          {church.status === 'rejected' && <XCircle className="h-3 w-3" />}
-                          {church.status === 'pending' && <Clock className="h-3 w-3" />}
-                          <span>{church.status}</span>
+                          {church.is_approved ? <CheckCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                          <span>{church.is_approved ? 'approved' : 'pending'}</span>
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 mb-1">
@@ -362,23 +358,23 @@ export function AdminDashboard() {
                     </div>
                     
                     <div className="flex items-center space-x-2 lg:ml-4">
-                      {church.status === 'pending' && (
-                        <>
-                          <button
-                            onClick={() => updateChurchStatus(church.id, 'approved')}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded transition-colors"
-                            title="Approve"
-                          >
-                            <CheckCircle className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => updateChurchStatus(church.id, 'rejected')}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
-                            title="Reject"
-                          >
-                            <XCircle className="h-4 w-4" />
-                          </button>
-                        </>
+                      {!church.is_approved && (
+                        <button
+                          onClick={() => updateChurchStatus(church.id, true)}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded transition-colors"
+                          title="Approve"
+                        >
+                          <CheckCircle className="h-4 w-4" />
+                        </button>
+                      )}
+                      {church.is_approved && (
+                        <button
+                          onClick={() => updateChurchStatus(church.id, false)}
+                          className="p-2 text-yellow-600 hover:bg-yellow-50 rounded transition-colors"
+                          title="Unapprove"
+                        >
+                          <XCircle className="h-4 w-4" />
+                        </button>
                       )}
                       
                       <button
@@ -434,16 +430,12 @@ export function AdminDashboard() {
                         <h3 className="font-semibold text-gray-900 flex-1">{user.full_name}</h3>
                         <div className="flex items-center space-x-2">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full flex items-center space-x-1 ${
-                            user.status === 'approved'
+                            user.is_approved
                               ? 'bg-green-100 text-green-800'
-                              : user.status === 'rejected'
-                              ? 'bg-red-100 text-red-800'
                               : 'bg-yellow-100 text-yellow-800'
                           }`}>
-                            {user.status === 'approved' && <CheckCircle className="h-3 w-3" />}
-                            {user.status === 'rejected' && <XCircle className="h-3 w-3" />}
-                            {user.status === 'pending' && <Clock className="h-3 w-3" />}
-                            <span>{user.status}</span>
+                            {user.is_approved ? <CheckCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                            <span>{user.is_approved ? 'approved' : 'pending'}</span>
                           </span>
                           
                           <span className={`px-2 py-1 text-xs font-medium rounded-full flex items-center space-x-1 ${
@@ -463,26 +455,26 @@ export function AdminDashboard() {
                     </div>
                     
                     <div className="flex items-center space-x-2 lg:ml-4">
-                      {user.status === 'pending' && (
-                        <>
-                          <button
-                            onClick={() => updateUserStatus(user.id, 'approved')}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded transition-colors"
-                            title="Approve"
-                          >
-                            <CheckCircle className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => updateUserStatus(user.id, 'rejected')}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
-                            title="Reject"
-                          >
-                            <XCircle className="h-4 w-4" />
-                          </button>
-                        </>
+                      {!user.is_approved && (
+                        <button
+                          onClick={() => updateUserStatus(user.id, true)}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded transition-colors"
+                          title="Approve"
+                        >
+                          <CheckCircle className="h-4 w-4" />
+                        </button>
                       )}
-                      
-                      {user.status === 'approved' && (
+                      {user.is_approved && (
+                        <button
+                          onClick={() => updateUserStatus(user.id, false)}
+                          className="p-2 text-yellow-600 hover:bg-yellow-50 rounded transition-colors"
+                          title="Unapprove"
+                        >
+                          <XCircle className="h-4 w-4" />
+                        </button>
+                      )}
+
+                      {user.is_approved && (
                         <button
                           onClick={() => updateUserRole(user.id, user.role === 'admin' ? 'member' : 'admin')}
                           className="p-2 text-purple-600 hover:bg-purple-50 rounded transition-colors"

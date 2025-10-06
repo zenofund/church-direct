@@ -23,12 +23,13 @@ export function Layout({ children }: LayoutProps) {
 
   const handleSignOut = async () => {
     await signOut()
-    navigate('/login')
+    navigate('/directory')
   }
 
+  // Navigation items for authenticated users only
   const navItems = [
     { icon: Home, label: 'Directory', path: '/directory' },
-    { icon: Plus, label: 'Add Church', path: '/add-church' },
+    ...(user ? [{ icon: Plus, label: 'Add Church', path: '/add-church' }] : []),
     ...(isAdmin ? [{ icon: Settings, label: 'Admin', path: '/admin' }] : []),
   ]
 
@@ -44,75 +45,100 @@ export function Layout({ children }: LayoutProps) {
                 Church Directory
               </h1>
             </div>
-            
-            {user && (
-              <div className="flex items-center space-x-4">
-                {/* Support Me Button */}
-                <a
-                  href="https://paystack.shop/pay/caffeine"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white text-sm font-medium rounded-lg hover:from-pink-600 hover:to-red-600 transition-all duration-200 shadow-sm hover:shadow-md"
-                >
-                  <Heart className="h-4 w-4" />
-                  <span>Buy me Coffee</span>
-                  <ExternalLink className="h-3 w-3" />
-                </a>
 
-                <div className="hidden sm:flex items-center space-x-2">
-                  <User className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-700">
-                    {userProfile?.full_name || user.email}
-                  </span>
+            <div className="flex items-center space-x-4">
+              {/* Support Me Button - Always visible */}
+              <a
+                href="https://paystack.shop/pay/caffeine"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white text-sm font-medium rounded-lg hover:from-pink-600 hover:to-red-600 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <Heart className="h-4 w-4" />
+                <span>Buy me Coffee</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+
+              {user ? (
+                <>
+                  <div className="hidden sm:flex items-center space-x-2">
+                    <User className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-700">
+                      {userProfile?.full_name || user.email}
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center space-x-1 text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="hidden sm:inline">Sign Out</span>
+                  </button>
+                </>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => navigate('/register')}
+                    className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Register
+                  </button>
                 </div>
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center space-x-1 text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:inline">Sign Out</span>
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </header>
 
       {/* Mobile Navigation */}
-      {user && (
-        <nav className="sm:hidden bg-white border-b border-gray-200">
-          <div className="flex justify-around py-2">
-            {navItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => navigate(item.path)}
-                className={`flex flex-col items-center py-2 px-3 text-xs transition-colors ${
-                  location.pathname === item.path
-                    ? 'text-blue-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <item.icon className="h-5 w-5 mb-1" />
-                {item.label}
-              </button>
-            ))}
-            
-            {/* Mobile Support Button */}
-            <a
-              href="https://paystack.shop/pay/caffeine"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center py-2 px-3 text-xs text-pink-600 hover:text-pink-700 transition-colors"
+      <nav className="sm:hidden bg-white border-b border-gray-200">
+        <div className="flex justify-around py-2">
+          {navItems.map((item) => (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className={`flex flex-col items-center py-2 px-3 text-xs transition-colors ${
+                location.pathname === item.path
+                  ? 'text-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
             >
-              <Heart className="h-5 w-5 mb-1" />
-              My Coffee
-            </a>
-          </div>
-        </nav>
-      )}
+              <item.icon className="h-5 w-5 mb-1" />
+              {item.label}
+            </button>
+          ))}
+
+          {/* Mobile Support Button */}
+          <a
+            href="https://paystack.shop/pay/caffeine"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center py-2 px-3 text-xs text-pink-600 hover:text-pink-700 transition-colors"
+          >
+            <Heart className="h-5 w-5 mb-1" />
+            Coffee
+          </a>
+
+          {!user && (
+            <button
+              onClick={() => navigate('/login')}
+              className="flex flex-col items-center py-2 px-3 text-xs text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              <User className="h-5 w-5 mb-1" />
+              Sign In
+            </button>
+          )}
+        </div>
+      </nav>
 
       {/* Desktop Navigation */}
-      {user && (
+      {navItems.length > 1 && (
         <nav className="hidden sm:block bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex space-x-8">
